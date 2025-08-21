@@ -19,3 +19,4 @@ echo.
 echo Done! Your repository should now be live at:
 echo https://github.com/VOID-121/work-tracker-app
 pause
+
