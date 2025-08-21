@@ -42,6 +42,10 @@ export const authAPI = {
   register: (userData) => api.post('/auth/register', userData),
   getProfile: () => api.get('/auth/profile'),
   updateProfile: (profileData) => api.put('/auth/profile', profileData),
+  uploadAvatar: (formData) => api.post('/auth/upload-avatar', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  changePassword: (passwordData) => api.put('/auth/change-password', passwordData),
 };
 
 // Work Entries API
@@ -74,8 +78,21 @@ export const adminAPI = {
   getUser: (id) => api.get(`/admin/users/${id}`),
   updateUser: (id, data) => api.put(`/admin/users/${id}`, data),
   deleteUser: (id) => api.delete(`/admin/users/${id}`),
+  createUser: (data) => api.post('/admin/users', data),
   getWorkEntries: (params = {}) => api.get('/admin/work-entries', { params }),
+  deleteWorkEntry: (id) => api.delete(`/admin/work-entries/${id}`),
   getNotes: (params = {}) => api.get('/admin/notes', { params }),
+  deleteNote: (id) => api.delete(`/admin/notes/${id}`),
+};
+
+// Password API
+export const passwordsAPI = {
+  getAll: (params = {}) => api.get('/passwords', { params }),
+  getById: (id) => api.get(`/passwords/${id}`),
+  create: (data) => api.post('/passwords', data),
+  update: (id, data) => api.put(`/passwords/${id}`, data),
+  delete: (id) => api.delete(`/passwords/${id}`),
+  getStats: () => api.get('/passwords/stats/summary'),
 };
 
 export default api;

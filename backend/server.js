@@ -14,6 +14,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static files
+app.use('/uploads', express.static('uploads'));
+
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/work-tracker';
 
@@ -29,6 +32,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/work-entries', require('./routes/workEntries'));
 app.use('/api/notes', require('./routes/notes'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/passwords', require('./routes/passwords'));
 
 // Basic route
 app.get('/', (req, res) => {

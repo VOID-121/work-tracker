@@ -81,7 +81,14 @@ export const AuthProvider = ({ children }) => {
   const updateProfile = async (profileData) => {
     try {
       const response = await authAPI.updateProfile(profileData);
+      // Update user state immediately
       setUser(response.data.user);
+      // Also refresh user data from server to ensure sync
+      const currentToken = localStorage.getItem('token');
+      if (currentToken) {
+        const updatedProfile = await authAPI.getProfile();
+        setUser(updatedProfile.data.user);
+      }
       return { success: true, data: response.data };
     } catch (error) {
       return { 

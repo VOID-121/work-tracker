@@ -6,12 +6,14 @@ import {
   BriefcaseIcon,
   DocumentTextIcon,
   UserIcon,
-  Cog6ToothIcon,
+
   UsersIcon,
   Bars3Icon,
   XMarkIcon,
   ArrowRightOnRectangleIcon,
   ChartBarIcon,
+  KeyIcon,
+
 } from '@heroicons/react/24/outline';
 import { clsx } from 'clsx';
 import toast from 'react-hot-toast';
@@ -32,6 +34,9 @@ const Layout = () => {
     { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
     { name: 'Work Entries', href: '/work-entries', icon: BriefcaseIcon },
     { name: 'Notes', href: '/notes', icon: DocumentTextIcon },
+    { name: 'Passwords', href: '/passwords', icon: KeyIcon },
+
+    { name: 'Reports', href: '/reports', icon: ChartBarIcon },
     { name: 'Profile', href: '/profile', icon: UserIcon },
   ];
 

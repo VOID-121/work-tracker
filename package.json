@@ -1,0 +1,20 @@
+{
+  "name": "work-tracker-app",
+  "version": "1.0.0",
+  "description": "Daily Work Tracker and Notes Manager - Full Stack Application",
+  "main": "backend/server.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd backend && npm run dev",
+    "client": "cd frontend && npm start",
+    "build": "cd frontend && npm run build",
+    "heroku-postbuild": "cd frontend && npm install && npm run build",
+    "start": "cd backend && npm start"
+  },
+  "keywords": ["work-tracker", "notes", "react", "node", "mongodb"],
+  "author": "Rakibul Islam (VOID-121)",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}

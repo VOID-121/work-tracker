@@ -52,7 +52,35 @@ router.get('/dashboard', adminAuth, async (req, res) => {
       { $limit: 5 }
     ]);
 
-    res.json({
+    // System health checks
+    const mongoose = require('mongoose');
+    const os = require('os');
+    
+    const systemHealth = {
+      database: {
+        status: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+        name: mongoose.connection.name || 'work-tracker',
+        host: mongoose.connection.host || 'localhost',
+        collections: mongoose.connection.db ? await mongoose.connection.db.listCollections().toArray().then(cols => cols.length) : 0
+      },
+      server: {
+        uptime: process.uptime(),
+        memory: {
+          used: process.memoryUsage().heapUsed / 1024 / 1024,
+          total: process.memoryUsage().heapTotal / 1024 / 1024,
+          external: process.memoryUsage().external / 1024 / 1024
+        },
+        cpu: {
+          usage: process.cpuUsage(),
+          count: os.cpus().length
+        },
+        platform: process.platform,
+        nodeVersion: process.version
+      },
+      timestamp: new Date().toISOString()
+    };
+
+    const response = {
       userStats: {
         total: totalUsers,
         active: activeUsers,
@@ -71,8 +99,11 @@ router.get('/dashboard', adminAuth, async (req, res) => {
         important: importantNotes,
         recent: recentNotes
       },
-      mostActiveUsers
-    });
+      mostActiveUsers,
+      systemHealth
+    };
+    
+    res.json(response);
   } catch (error) {
     console.error('Admin dashboard error:', error);
     res.status(500).json({ message: 'Server error' });
@@ -406,6 +437,106 @@ router.get('/notes', [
     });
   } catch (error) {
     console.error('Admin get notes error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   DELETE /api/admin/work-entries/:id
+// @desc    Delete work entry
+// @access  Admin
+router.delete('/work-entries/:id', adminAuth, async (req, res) => {
+  try {
+    const workEntry = await WorkEntry.findById(req.params.id);
+    
+    if (!workEntry) {
+      return res.status(404).json({ message: 'Work entry not found' });
+    }
+
+    await WorkEntry.findByIdAndDelete(req.params.id);
+    
+    res.json({ message: 'Work entry deleted successfully' });
+  } catch (error) {
+    console.error('Delete work entry error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   DELETE /api/admin/notes/:id
+// @desc    Delete note
+// @access  Admin
+router.delete('/notes/:id', adminAuth, async (req, res) => {
+  try {
+    const note = await Note.findById(req.params.id);
+    
+    if (!note) {
+      return res.status(404).json({ message: 'Note not found' });
+    }
+
+    await Note.findByIdAndDelete(req.params.id);
+    
+    res.json({ message: 'Note deleted successfully' });
+  } catch (error) {
+    console.error('Delete note error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   POST /api/admin/users
+// @desc    Create new user
+// @access  Admin
+router.post('/users', [
+  adminAuth,
+  body('username').trim().isLength({ min: 3, max: 30 }).withMessage('Username must be 3-30 characters'),
+  body('email').isEmail().withMessage('Valid email is required'),
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+  body('role').optional().isIn(['user', 'admin']).withMessage('Invalid role')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
+    const { username, email, password, role } = req.body;
+
+    // Check if user exists
+    const existingUser = await User.findOne({ 
+      $or: [{ email }, { username }] 
+    });
+
+    if (existingUser) {
+      return res.status(400).json({ 
+        message: 'User with this email or username already exists' 
+      });
+    }
+
+    // Create user
+    const user = new User({
+      username,
+      email,
+      password,
+      role: role || 'user',
+      isActive: true
+    });
+
+    await user.save();
+
+    res.status(201).json({
+      message: 'User created successfully',
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        isActive: user.isActive,
+        createdAt: user.createdAt
+      }
+    });
+  } catch (error) {
+    console.error('Create user error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

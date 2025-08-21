@@ -14,12 +14,14 @@ const WorkEntries = () => {
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
-  // Fetch work entries
+  // Fetch work entries with real-time updates
   const { data: workEntries, isLoading } = useQuery(
     'workEntries',
     () => workEntriesAPI.getAll(),
     {
       select: (response) => response.data.workEntries,
+      refetchInterval: 10000, // Refetch every 10 seconds
+      staleTime: 5000, // Consider data stale after 5 seconds
     }
   );
 
@@ -27,6 +29,8 @@ const WorkEntries = () => {
   const createMutation = useMutation(workEntriesAPI.create, {
     onSuccess: () => {
       queryClient.invalidateQueries('workEntries');
+      queryClient.invalidateQueries('adminDashboard'); // Update admin stats
+      queryClient.invalidateQueries('workStats'); // Update dashboard stats
       toast.success('Work entry created successfully!');
       setShowCreateForm(false);
       reset();
@@ -42,6 +46,8 @@ const WorkEntries = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries('workEntries');
+        queryClient.invalidateQueries('adminDashboard'); // Update admin stats
+        queryClient.invalidateQueries('workStats'); // Update dashboard stats
         toast.success('Work entry updated successfully!');
         setEditingEntry(null);
         reset();

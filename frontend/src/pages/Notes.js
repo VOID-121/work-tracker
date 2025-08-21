@@ -15,12 +15,14 @@ const Notes = () => {
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
-  // Fetch notes
+  // Fetch notes with real-time updates
   const { data: notes, isLoading } = useQuery(
     'notes',
     () => notesAPI.getAll(),
     {
       select: (response) => response.data.notes,
+      refetchInterval: 10000, // Refetch every 10 seconds
+      staleTime: 5000, // Consider data stale after 5 seconds
     }
   );
 
@@ -28,6 +30,8 @@ const Notes = () => {
   const createMutation = useMutation(notesAPI.create, {
     onSuccess: () => {
       queryClient.invalidateQueries('notes');
+      queryClient.invalidateQueries('adminDashboard'); // Update admin stats
+      queryClient.invalidateQueries('notesStats'); // Update dashboard stats
       toast.success('Note created successfully!');
       setShowCreateForm(false);
       reset();
@@ -43,6 +47,8 @@ const Notes = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries('notes');
+        queryClient.invalidateQueries('adminDashboard'); // Update admin stats
+        queryClient.invalidateQueries('notesStats'); // Update dashboard stats
         toast.success('Note updated successfully!');
         setEditingNote(null);
         reset();

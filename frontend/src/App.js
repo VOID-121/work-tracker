@@ -11,6 +11,9 @@ import Dashboard from './pages/Dashboard';
 import WorkEntries from './pages/WorkEntries';
 import Notes from './pages/Notes';
 import Profile from './pages/Profile';
+import Reports from './pages/Reports';
+
+import Passwords from './pages/Passwords';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminWorkEntries from './pages/admin/AdminWorkEntries';
@@ -97,6 +100,9 @@ function AppRoutes() {
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="work-entries" element={<WorkEntries />} />
         <Route path="notes" element={<Notes />} />
+        <Route path="passwords" element={<Passwords />} />
+
+        <Route path="reports" element={<Reports />} />
         <Route path="profile" element={<Profile />} />
         
         {/* Admin Routes */}
