@@ -57,6 +57,19 @@ const initializeDefaultUsers = async () => {
 // Initialize on module load
 initializeDefaultUsers();
 
+// Test endpoint
+router.get('/test', (req, res) => {
+  res.json({ 
+    message: 'API is working!', 
+    timestamp: new Date().toISOString(),
+    env: {
+      hasMongoUri: !!process.env.MONGODB_URI,
+      hasJwtSecret: !!process.env.JWT_SECRET,
+      nodeEnv: process.env.NODE_ENV
+    }
+  });
+});
+
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
