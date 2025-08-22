@@ -10,6 +10,53 @@ const { auth } = require('../middleware/auth');
 
 const router = express.Router();
 
+// Initialize default users if database is empty
+const initializeDefaultUsers = async () => {
+  try {
+    const userCount = await User.countDocuments();
+    if (userCount === 0) {
+      console.log('🔧 Initializing default users...');
+      
+      // Create admin user
+      const admin = new User({
+        username: 'admin',
+        email: 'admin@example.com',
+        password: 'admin123',
+        role: 'admin',
+        profile: {
+          firstName: 'Admin',
+          lastName: 'User',
+          department: 'IT',
+          position: 'System Administrator'
+        }
+      });
+      await admin.save();
+      
+      // Create demo user
+      const demoUser = new User({
+        username: 'demo_user',
+        email: 'user@example.com',
+        password: 'user123',
+        role: 'user',
+        profile: {
+          firstName: 'Demo',
+          lastName: 'User',
+          department: 'Development',
+          position: 'Software Developer'
+        }
+      });
+      await demoUser.save();
+      
+      console.log('✅ Default users created successfully');
+    }
+  } catch (error) {
+    console.error('⚠️ Error initializing default users:', error.message);
+  }
+};
+
+// Initialize on module load
+initializeDefaultUsers();
+
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
