@@ -329,3 +329,4 @@ useQuery('dashboardStats', fetchStats, {
 **🎉 Transform your workflow with Work Tracker App - Where productivity meets modern technology!**
 
 *Built with ❤️ using React.js, Node.js, and MongoDB*
+
